@@ -14,6 +14,7 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 import App from '@/App.vue'
 import './registerServiceWorker'
+import vuetify from './plugins/vuetify';
 
 Vue.config.productionTip = false
 
@@ -26,6 +27,6 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
-  
+  vuetify,
   render: h => h(App)
 }).$mount('#app')

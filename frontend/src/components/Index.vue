@@ -8,7 +8,7 @@
                  preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail">
               <title>{{ subscription.full_name }}</title>
               <rect width="100%" height="100%" fill="#55595c"/>
-              <text x="50%" y="50%" fill="#eceeef" dy=".3em">{{ subscription.full_name.charAt(0) }}</text>
+              <text x="50%" y="50%" fill="#eceeef" dy=".3em">{{ subscription.email}}</text>
             </svg>
           </div>
           <div class="col-md-8">
