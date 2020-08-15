@@ -9,6 +9,4 @@ urlpatterns = [
     path("logout/", logout, {"next_page": "/"}, name="logout"),
     path("api/", include(api.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
-    path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.authtoken')),
 ]

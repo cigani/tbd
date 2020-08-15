@@ -1,4 +1,5 @@
 import axios from 'axios'
+// axios.defaults.baseURL= 'localhost:/8000/';
 
 const state = {
   users: [],
@@ -6,35 +7,46 @@ const state = {
   tokenFail: false
 }
 
-const getters = {}
+const getters = {
+  allUsers: state => state.users
+}
+
 
 const mutations = {
-  setUsers (state, users) {
+  setUsers(state, users) {
     state.users = users
   },
-  setUser (state, user) {
+  setUser(state, user) {
     state.user = user
   },
-  setEmailFail (state, bool) {
+  setEmailFail(state, bool) {
     state.emailFail = bool
   },
-  setTokenFail (state, bool) {
+  setTokenFail(state, bool) {
     state.tokenFail = bool
   }
 }
 
 const actions = {
-  getUsersList (context) {
+  getUsersList(context) {
     return axios.get('/api/users')
-      .then(response => { context.commit('setUsers', response.data) })
-      .catch(e => { console.log(e) })
+      .then(response => {
+        context.commit('setUsers', response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
   },
-  getUser (context, userId) {
+  getUser(context, userId) {
     return axios.get('/api/users/' + userId)
-      .then(response => { context.commit('setUser', response.data) })
-      .catch(e => { console.log(e) })
+      .then(response => {
+        context.commit('setUser', response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
   },
-  createUser (context, payload) {
+  createUser(context, payload) {
     var avatar = payload.avatar
     delete payload.avatar
 
@@ -47,9 +59,11 @@ const actions = {
           return axios.patch('/api/users/' + response.data.id, data)
         }
       })
-      .catch(e => { console.log(e) })
+      .catch(e => {
+        console.log(e)
+      })
   },
-  editUser (context, payload) {
+  editUser(context, payload) {
     var avatar = payload.avatar
     delete payload.avatar
 
@@ -62,22 +76,35 @@ const actions = {
           return axios.patch('/api/users/' + payload.id, data)
         }
       })
-      .catch(e => { console.log(e) })
+      .catch(e => {
+        console.log(e)
+      })
   },
-  deleteUser (context, userId) {
+  deleteUser(context, userId) {
     return axios.delete('/api/users/' + userId)
-      .then(response => {})
-      .catch(e => { console.log(e) })
+      .then(response => {
+      })
+      .catch(e => {
+        console.log(e)
+      })
   },
-  passwordReset (context, user) {
+  passwordReset(context, user) {
     return axios.post('/api/users/password_reset/', user)
-      .then(response => { context.commit('setEmailFail', false) })
-      .catch(e => { context.commit('setEmailFail', true) })
+      .then(response => {
+        context.commit('setEmailFail', false)
+      })
+      .catch(e => {
+        context.commit('setEmailFail', true)
+      })
   },
-  passwordChange (context, payload) {
+  passwordChange(context, payload) {
     return axios.post('/api/users/password_change/', payload)
-      .then(response => { context.commit('setTokenFail', false) })
-      .catch(e => { context.commit('setTokenFail', true) })
+      .then(response => {
+        context.commit('setTokenFail', false)
+      })
+      .catch(e => {
+        context.commit('setTokenFail', true)
+      })
   }
 }
 

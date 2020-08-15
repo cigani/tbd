@@ -1,20 +1,25 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import ExampleComponent from '@/components/ExampleComponent.vue'
 import Index from '@/components/Index'
 import UserAuth from "@/components/UserAuth";
+import UserCreate from "@/components/UserCreate/UserCreate";
 const routes = [
   {path: "/index", name: "index", component: Index},
   {
-    path: "/create",
-    name: "create",
-    component: () => import("./components/ExampleComponent")
+    path: "/users",
+    name: "users",
+    component: () => import("./components/UserView")
   },
   {
     path: "/auth",
     name: "auth",
     component: UserAuth
+  },
+  {
+    path: "/create",
+    name: "create",
+    component: UserCreate,
   }
 ]
 
