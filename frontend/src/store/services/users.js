@@ -24,7 +24,7 @@ const mutations = {
   },
   setTokenFail(state, bool) {
     state.tokenFail = bool
-  }
+  },
 }
 
 const actions = {

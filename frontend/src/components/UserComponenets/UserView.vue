@@ -5,8 +5,9 @@
       <v-list-group
         prepend-icon="fa-user"
         no-action
-        v-for="user in users.users"
-        :key="user.id">
+        v-for="(user, index) in users.users"
+        :key="index"
+        v-if="user.is_active === true">
         <template v-slot:activator>
           <v-list-item-content>
             <v-list-item-title v-text="user.short_name">
@@ -19,12 +20,14 @@
           @click="logdata([user.id, i])"
           v-if="i!=='id'"
         >
-        <v-list-item-content >
-          <v-list-item-title >
-            {{i}} : {{subItem}}
-          </v-list-item-title>
-        </v-list-item-content>
+          <v-list-item-content>
+            <v-list-item-title>
+              {{ i }} : {{ subItem }}
+            </v-list-item-title>
+
+          </v-list-item-content>
         </v-list-item>
+        <v-btn outlined color="orange" @click="removeElement(user,user.id)">Delete User</v-btn>
       </v-list-group>
     </v-list>
   </v-card>
@@ -32,23 +35,27 @@
 
 <script>
 
-import {mapGetters, mapActions, mapState} from 'vuex';
-import store from "@/store/index.js";
+import {mapActions, mapState} from 'vuex';
 
 export default {
   name: 'FirstComponent',
-  store,
   computed: {
     ...mapState(["users"]),
   },
-  methods:{
-    logdata(item){
+  methods: {
+    ...mapActions(["deleteUser"]),
+    logdata(item) {
       console.log(item)
-    }
     },
-  mounted() {
+    removeElement: function (user, pk) {
+      console.log(user, pk)
+      this.$store.dispatch("deleteUser", pk)
+      this.users.users = this.users.users.filter(x => x.id !== user.id)
+    },
+
+  },
+  created() {
     this.$store.dispatch("getUsersList")
-    console.log(this.users)
   },
 }
 

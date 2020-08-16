@@ -1,15 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Index from '@/components/Index'
-import UserAuth from "@/components/UserAuth";
-import UserCreate from "@/components/UserCreate/UserCreate";
+import UserAuth from "@/components/UserComponenets/UserAuth";
+import UserCreate from "@/components/UserComponenets/UserCreate";
+import store from "@/store/userstore";
 const routes = [
-  {path: "/index", name: "index", component: Index},
   {
     path: "/users",
     name: "users",
-    component: () => import("./components/UserView")
+    component: () => import("./components/UserComponenets/UserView")
   },
   {
     path: "/auth",
@@ -30,7 +29,8 @@ const router = new Router({
     return {x: 0, y: 0}
   },
   mode: 'history',
-  routes
+  routes,
+  store
 
 })
 

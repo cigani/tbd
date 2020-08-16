@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import store from '@/store'
+import store from '@/store/userstore'
 import router from '@/router'
 
 

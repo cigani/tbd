@@ -28,6 +28,7 @@
             label="Last name"
             required
           ></v-text-field>
+
         </v-col>
 
         <v-col
@@ -97,11 +98,9 @@
 </template>
 
 <script>
-import {mapActions, mapState} from 'vuex';
-import store from "@/store/index.js";
+import {mapActions} from 'vuex';
 
 export default {
-  store,
   data: () => ({
     valid: false,
     submitted: false,
@@ -122,7 +121,7 @@ export default {
     }
   }),
   methods: {
-    ...mapActions(["createUser"]),
+    ...mapActions(["postRegister"]),
     create() {
       const payload = {
         first_name: this.payload.firstname,
@@ -131,8 +130,8 @@ export default {
         email: this.payload.email,
         password: this.payload.password
       };
-      console.log(payload)
-      this.$store.dispatch("createUser", payload)
+      this.$store.dispatch("postRegister", payload)
+      console.log(this.$store.state)
       this.submitted = true;
     },
     newUser() {
