@@ -1,45 +1,50 @@
 <template>
   <v-app>
-    <v-app-bar
+    <v-navigation-drawer
+      v-model="sidebar"
       app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+      mini-variant>
+      <v-list
+        nav>
+        <v-list-item
+          v-for="item in menuItems"
+          :key="item.title"
+          :to="item.path">
+          <v-list-item-icon>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>{{ item.title }}</v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
 
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
+    <v-menu>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-dots-vertical</v-icon>
+        </v-btn>
+      </template>
+      <v-list class="hidden-xs-only">
+        <v-list-item
+          color="primary"
+          v-for="item in menuItems"
+          :key="item.title"
+          :to="item.path">
+          <v-icon color="blue darn-2" left>{{item.icon}}</v-icon>
+          {{ item.title }}
+        </v-list-item>
+      </v-list>
+    </v-menu>
 
     <v-main>
-      <router-view/>
+      <router-view></router-view>
     </v-main>
+
   </v-app>
 </template>
 
@@ -49,7 +54,13 @@ export default {
   name: 'App',
 
   data: () => ({
-    //
+    sidebar: false,
+    menuItems: [
+      {title: 'Home', path: '/Users', icon: 'home'},
+      {title: 'Sign Up', path: '/Create', icon: 'mdi-account'},
+      {title: 'Sign In', path: '/auth', icon: 'lock_open'}
+    ]
   }),
-};
+}
+
 </script>

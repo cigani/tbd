@@ -8,7 +8,7 @@
         >
           <v-text-field
             prepend-icon="mdi-name"
-            v-model="firstname"
+            v-model="payload.firstname"
             :rules="nameRules"
             :counter="10"
             label="First name"
@@ -22,7 +22,7 @@
         >
           <v-text-field
             prepend-icon="mdi-name"
-            v-model="lastname"
+            v-model="payload.lastname"
             :rules="nameRules"
             :counter="10"
             label="Last name"
@@ -36,7 +36,7 @@
         >
           <v-text-field
             prepend-icon="mdi-email"
-            v-model="email"
+            v-model="payload.email"
             :rules="emailRules"
             label="E-mail"
             required
@@ -47,7 +47,7 @@
           md="4"
         >
           <v-text-field
-            v-model="password"
+            v-model="payload.password"
             prepend-icon="mdi-lock"
             label="Password"
             type="password"
@@ -97,13 +97,14 @@
 </template>
 
 <script>
-import {mapGetters, mapActions, mapState} from 'vuex';
+import {mapActions, mapState} from 'vuex';
 import store from "@/store/index.js";
 
 export default {
   store,
   data: () => ({
     valid: false,
+    submitted: false,
     nameRules: [
       v => !!v || 'Name is required',
       v => v.length <= 10 || 'Name must be less than 10 characters',
@@ -120,18 +121,15 @@ export default {
       email: '',
     }
   }),
-  props: {
-    submitted: false
-  },
   methods: {
     ...mapActions(["createUser"]),
     create() {
-      var payload = {
-        first_name: this.firstname,
-        last_name: this.lastname,
-        is_admin: this.isadmin,
-        email: this.email,
-        password: this.password
+      const payload = {
+        first_name: this.payload.firstname,
+        last_name: this.payload.lastname,
+        is_admin: this.payload.isadmin,
+        email: this.payload.email,
+        password: this.payload.password
       };
       console.log(payload)
       this.$store.dispatch("createUser", payload)
@@ -139,7 +137,6 @@ export default {
     },
     newUser() {
       this.submitted = false;
-      this.payload = {};
     }
   }
 
