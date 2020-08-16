@@ -16,7 +16,7 @@
         <v-list-item
           v-for="(subItem, i) in user"
           :key=subItem.id
-          @click="logdata([user.id, id])"
+          @click="logdata([user.id, i])"
           v-if="i!=='id'"
         >
         <v-list-item-content >
