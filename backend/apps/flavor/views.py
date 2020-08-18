@@ -7,7 +7,8 @@ from rest_framework.decorators import action
 
 from .serializers import FlavorSerializer
 from .models import Flavor
-import csv
+from .netz import Parse as csv_parse
+
 
 class FlavorViewSet(viewsets.ModelViewSet):
     queryset = Flavor.objects.all()
@@ -22,9 +23,15 @@ class FlavorViewSet(viewsets.ModelViewSet):
         flavor = Flavor.objects.get(pk=pk)
         print(flavor)
         print(request.data['spectrum'])
-        print(pk)
-        serializer=self.get_serializer()
-        return Response(serializer.data)
+        if request.data.get('spectrum'):
+            netz = csv_parse(request.data.get('spectrum').read().decode('utf-8').splitlines())
+            xy = netz.xy()
+            meta = netz.meta()
+            print(pk)
+            return Response((str(flavor), pk, request.data,meta,xy))
+        serializer = self.serializer_class
+        return Response(serializer)
+
     @action(detail=False)
     def recent_flavors(self, request):
         recent_flavors = Flavor.objects.all().order_by("-id")
