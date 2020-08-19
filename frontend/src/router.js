@@ -3,12 +3,16 @@ import Router from 'vue-router'
 
 import UserAuth from "@/components/UserComponenets/UserAuth";
 import UserCreate from "@/components/UserComponenets/UserCreate";
-import store from "@/store/userstore";
+
+import store from "@/store/store";
+import UserView from "@/components/UserComponenets/UserView";
+import FlavorView from "@/components/FlavorComponents/FlavorView";
+
 const routes = [
   {
     path: "/users",
     name: "users",
-    component: () => import("./components/UserComponenets/UserView")
+    component: UserView
   },
   {
     path: "/auth",
@@ -19,9 +23,13 @@ const routes = [
     path: "/create",
     name: "create",
     component: UserCreate,
+  },
+  {
+    path: "/flavors",
+    name: "flavors",
+    component: FlavorView
   }
 ]
-
 
 Vue.use(Router)
 const router = new Router({

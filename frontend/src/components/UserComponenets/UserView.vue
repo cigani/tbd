@@ -1,4 +1,5 @@
 <template>
+
   <v-card
     class="mx-auto">
     <v-list>
@@ -38,7 +39,7 @@
 import {mapActions, mapState} from 'vuex';
 
 export default {
-  name: 'FirstComponent',
+  name: 'users',
   computed: {
     ...mapState(["users"]),
   },

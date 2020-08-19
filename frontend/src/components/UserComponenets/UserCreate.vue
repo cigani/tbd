@@ -88,7 +88,7 @@
     <v-btn
       color="success"
       class="mr-4"
-      @click="$router.push('Users')"
+      @click="$router.push({name: 'users'})"
       ripple
       outlined
       tile
