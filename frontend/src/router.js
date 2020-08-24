@@ -7,6 +7,7 @@ import UserCreate from "@/components/UserComponenets/UserCreate";
 import store from "@/store/store";
 import UserView from "@/components/UserComponenets/UserView";
 import FlavorView from "@/components/FlavorComponents/FlavorView";
+import SpectrumView from "@/components/FlavorComponents/SpectrumView";
 
 const routes = [
   {
@@ -28,7 +29,18 @@ const routes = [
     path: "/flavors",
     name: "flavors",
     component: FlavorView
+  },
+  {
+    path: "/spectrums",
+    name: "spectrums",
+    component: SpectrumView
+  },
+  {
+    path: "/spectrums/:spectrumId",
+    name: "spectrum",
+    component: SpectrumView
   }
+
 ]
 
 Vue.use(Router)

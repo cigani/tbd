@@ -2,10 +2,13 @@ import uuid
 
 from django.db import models
 from picklefield.fields import PickledObjectField
+from django.contrib.postgres.fields import JSONField
+
 
 class Spectrum(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    data = PickledObjectField(copy=False)
+    data = JSONField()
+    meta = JSONField()
 
 
 class Flavor(models.Model):

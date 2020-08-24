@@ -21,22 +21,17 @@ class FlavorViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def set_spectrum(self, request, pk=None):
         flavor = Flavor.objects.get(pk=pk)
-        print(flavor)
-        print(request.data["spectrum"])
         if request.data.get("spectrum"):
-            netz = csvParse(
-                request.data.get("spectrum").read().decode("utf-8").splitlines()
-            )
+            netz = csvParse(request.data.get("spectrum").read())
             xy = netz.xy()
             meta = netz.meta()
-            data = {"meta": meta, "xy": xy}
-            spectrum = Spectrum.objects.create(data=data)
+            spectrum = Spectrum.objects.create(data=xy, meta=meta)
             flavor.spectrum = spectrum
             flavor.save()
             return Response(FlavorSerializer(flavor).data)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=True, methods=['GET'])
+    @action(detail=True, methods=["GET"])
     def get_spectrum(self, request, pk):
         spectrum = Flavor.objects.get(pk=pk).spectrum
         return Response(SpectrumSerializer(spectrum).data)
@@ -51,3 +46,9 @@ class FlavorViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(recent_flavors, many=True)
         return Response(serializer.data)
+
+
+class SpectrumViewSet(viewsets.ModelViewSet):
+    queryset = Spectrum.objects.all()
+    serializer_class = SpectrumSerializer
+    permission_classes = []

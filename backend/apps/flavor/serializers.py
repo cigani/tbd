@@ -3,7 +3,6 @@ from .models import Flavor, Spectrum
 
 
 class FlavorSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Flavor
         fields = "__all__"
@@ -14,7 +13,7 @@ class SpectrumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Spectrum
-        fields = ["id", "data"]
+        fields = "__all__"
 
     def get_data(self, obj):
         return obj.data
