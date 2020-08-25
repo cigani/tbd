@@ -5,7 +5,12 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 
-from .serializers import FlavorSerializer, SpectrumSerializer
+from .serializers import (
+    FlavorSerializer,
+    SpectrumSerializer,
+    SubstrateSerializer,
+    AdditiveSerializer,
+)
 from .models import Flavor, Spectrum
 from .netz import Parse as csvParse
 
@@ -14,20 +19,23 @@ class FlavorViewSet(viewsets.ModelViewSet):
     queryset = Flavor.objects.all()
     serializer_class = FlavorSerializer
     permission_classes = []
+    spectrum_worker = csvParse
 
     def perform_destroy(self, instance):
         instance.delete()
 
     @action(detail=True, methods=["post"])
-    def set_spectrum(self, request, pk=None):
+    def set_spectrum(self, request, pk):
         flavor = Flavor.objects.get(pk=pk)
         if request.data.get("spectrum"):
-            netz = csvParse(request.data.get("spectrum").read())
+            netz = self.spectrum_worker(request.data.get("spectrum").read())
             xy = netz.xy()
             meta = netz.meta()
-            spectrum = Spectrum.objects.create(data=xy, meta=meta)
-            flavor.spectrum = spectrum
-            flavor.save()
+            pure = request.data.get("pure", False)
+            spectrum = Spectrum.objects.create(data=xy, meta=meta, pure=pure)
+            serializer = FlavorSerializer(flavor, {"spectrum": spectrum.id})
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             return Response(FlavorSerializer(flavor).data)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -37,14 +45,23 @@ class FlavorViewSet(viewsets.ModelViewSet):
         return Response(SpectrumSerializer(spectrum).data)
 
     @action(detail=False)
-    def recent_flavors(self, request):
-        recent_flavors = Flavor.objects.all().order_by("-id")
-        page = self.paginate_queryset(recent_flavors)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+    def substrates(self, request):
+        substrates = (
+            Flavor.objects.values_list("substrate", named=True)
+            .distinct("substrate")
+            .exclude(substrate__isnull=True)
+        )
+        serializer = SubstrateSerializer(substrates, many=True)
+        return Response(serializer.data)
 
-        serializer = self.get_serializer(recent_flavors, many=True)
+    @action(detail=False)
+    def additives(self, request):
+        additives = (
+            Flavor.objects.values_list("additive", named=True)
+            .distinct("additive")
+            .exclude(additive__isnull=True)
+        )
+        serializer = AdditiveSerializer(additives, many=True)
         return Response(serializer.data)
 
 

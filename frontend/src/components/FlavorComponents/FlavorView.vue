@@ -9,7 +9,7 @@
         :key="index">
         <template v-slot:activator>
           <v-list-item-content>
-            <v-list-item-title v-text="flavor.name">
+            <v-list-item-title v-text="flavor.label">
             </v-list-item-title>
           </v-list-item-content>
         </template>
@@ -17,7 +17,7 @@
           :key=subItem
           @click="logdata([subItem, i])"
           v-for="(subItem, i) in flavor"
-          v-if="i!=='id' && subItem"
+          v-if="i!=='id' && subItem && i!=='label'"
         >
           <v-list-item-content v-if="i !=='spectrum'">
             {{ i }} : {{ subItem }}
