@@ -14,8 +14,15 @@ class FlavorSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.spectrum = validated_data.get("spectrum", instance.spectrum)
+        instance.pure = validated_data.get("pure", instance.pure)
         instance.save()
         return instance
+
+
+class QmidSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flavor
+        fields = ["additive", "pure"]
 
 
 class SubstrateSerializer(serializers.ModelSerializer):

@@ -1,5 +1,6 @@
 import csv
 import re
+import pandas as pd
 
 
 class Parse:
@@ -67,3 +68,15 @@ class Parse:
         data_dict = dict(zip(columns, data))
         self._xy = data_dict
         return self._xy
+
+    def pure(self):
+        keys = [x for x in list(self.xy().keys()) if re.search("QMID", x)]
+        data = {key: self.xy()[key] for key in keys}
+        tops = pd.DataFrame(data)
+        top_values = tops.describe()
+        top_qmids = top_values.sort_values(by="top", axis=1).iloc[:, :5].columns.values
+        name = self.meta().get("SAMPLE")
+        if name:
+            return list(top_qmids)
+        else:
+            return None

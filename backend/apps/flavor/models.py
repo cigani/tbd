@@ -18,3 +18,4 @@ class Flavor(models.Model):
     spectrum = models.ForeignKey(
         Spectrum, related_name="flavor", on_delete=models.CASCADE, null=True
     )
+    pure = JSONField(null=True)

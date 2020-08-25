@@ -10,6 +10,7 @@ from .serializers import (
     SpectrumSerializer,
     SubstrateSerializer,
     AdditiveSerializer,
+    QmidSerializer,
 )
 from .models import Flavor, Spectrum
 from .netz import Parse as csvParse
@@ -28,12 +29,16 @@ class FlavorViewSet(viewsets.ModelViewSet):
     def set_spectrum(self, request, pk):
         flavor = Flavor.objects.get(pk=pk)
         if request.data.get("spectrum"):
+            data = {}
             netz = self.spectrum_worker(request.data.get("spectrum").read())
             xy = netz.xy()
             meta = netz.meta()
             pure = request.data.get("pure", False)
+            top_qmids = netz.pure()
+            data["pure"] = top_qmids
             spectrum = Spectrum.objects.create(data=xy, meta=meta, pure=pure)
-            serializer = FlavorSerializer(flavor, {"spectrum": spectrum.id})
+            data["spectrum"] = spectrum.id
+            serializer = FlavorSerializer(flavor, data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(FlavorSerializer(flavor).data)
@@ -62,6 +67,16 @@ class FlavorViewSet(viewsets.ModelViewSet):
             .exclude(additive__isnull=True)
         )
         serializer = AdditiveSerializer(additives, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def qmids(self, request):
+        qmids = (
+            Flavor.objects.values_list("pure", "additive", named=True)
+            .exclude(pure__isnull=True)
+            .exclude(pure__exact={})
+        )
+        serializer = QmidSerializer(qmids, many=True)
         return Response(serializer.data)
 
 
