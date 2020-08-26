@@ -20,9 +20,21 @@ class FlavorSerializer(serializers.ModelSerializer):
 
 
 class QmidSerializer(serializers.ModelSerializer):
+    qmids = serializers.SerializerMethodField()
+
     class Meta:
         model = Flavor
-        fields = ["additive", "pure"]
+        fields = "__all__"
+
+    def get_qmids(self, obj):
+        return {obj.additive: obj.pure}
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        profile_representation = representation.pop("qmids")
+        for key in profile_representation:
+            representation[key] = profile_representation[key]
+        return profile_representation
 
 
 class SubstrateSerializer(serializers.ModelSerializer):

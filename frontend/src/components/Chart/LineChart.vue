@@ -3,10 +3,14 @@
 </template>
 <script>
 import {Line, mixins} from 'vue-chartjs'
-const {reactiveProp} = mixins
+
 export default {
   extends: Line,
-
+  data() {
+    return {
+      chart: null
+    }
+  },
   props: {
     width: {
       type: Number,
@@ -35,18 +39,16 @@ export default {
     }
   },
   mounted() {
-
     this.chart = new Chart(this.$refs.myChart, {
         type: 'line',
         data: {
-          labels: this.labels,
           datasets: this.datasets,
-
+          options: this.options,
+          labels: this.labels,
         },
-        options: this.options
+
       },
     )
-
   },
   beforeDestroy() {
     // Don't forget to destroy the Chart.js instance.

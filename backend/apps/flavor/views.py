@@ -72,8 +72,8 @@ class FlavorViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def qmids(self, request):
         qmids = (
-            Flavor.objects.values_list("pure", "additive", named=True)
-            .exclude(pure__isnull=True)
+            Flavor.objects.values_list("additive", "pure", named=True)
+            .filter(pure__isnull=False)
             .exclude(pure__exact={})
         )
         serializer = QmidSerializer(qmids, many=True)

@@ -5,7 +5,8 @@ const STATE = {
   spectrum: null,
   meta: null,
   additives: [],
-  substrates: []
+  substrates: [],
+  qmids: null
 
 };
 

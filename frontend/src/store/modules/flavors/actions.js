@@ -4,7 +4,7 @@ import {
   SET_SPECTRUM,
   SET_SPECTRUMS,
   SET_ADDITIVES,
-  SET_SUBSTRATES
+  SET_SUBSTRATES, SET_QMIDS
 } from "@/store/modules/flavors/mutation-types";
 
 export default {
@@ -39,7 +39,7 @@ export default {
     return axios.get('/api/flavors/substrates')
       .then(response => {
         let substrates = []
-        for (const i in response.data){
+        for (const i in response.data) {
           substrates.push(response.data[i].substrate)
         }
         context.commit(SET_SUBSTRATES, substrates)
@@ -52,11 +52,26 @@ export default {
     return axios.get('/api/flavors/additives')
       .then(response => {
         let additives = []
-        for (const i in response.data){
+        for (const i in response.data) {
           additives.push(response.data[i].additive)
         }
         context.commit(SET_ADDITIVES, additives)
       })
+      .catch(e => {
+        console.log(e)
+      })
+  },
+  getQmids(context) {
+    return axios.get('/api/flavors/qmids')
+      .then(response => {
+          let obj = {};
+          response.data.forEach(function (i) {
+            var key = Object.keys(i)[0];
+            obj[key] = i[key]
+          })
+          context.commit(SET_QMIDS, obj)
+        }
+      )
       .catch(e => {
         console.log(e)
       })
