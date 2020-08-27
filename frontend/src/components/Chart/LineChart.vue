@@ -36,16 +36,21 @@ export default {
       // instance to re-render the chart.
       this.chart.data.datasets = newDatasets;
       this.chart.update();
+    },
+    options(newOptions){
+      this.chart.options = newOptions
+      this.chart.update();
     }
   },
   mounted() {
+    console.log(this.datasets)
     this.chart = new Chart(this.$refs.myChart, {
         type: 'line',
         data: {
           datasets: this.datasets,
-          options: this.options,
           labels: this.labels,
         },
+        options: this.options,
 
       },
     )

@@ -3,21 +3,7 @@
     <v-toolbar
       dark
       color="teal">
-      <!--      <v-toolbar-title>Substrate</v-toolbar-title>-->
-      <!--      <v-autocomplete-->
-      <!--        v-model="substrateSelect"-->
-      <!--        :loading="loadingSubstrate"-->
-      <!--        :items="substrateItems"-->
-      <!--        :search-input.sync="substrateSearch"-->
-      <!--        cache-items-->
-      <!--        class="mx-4"-->
-      <!--        flat-->
-      <!--        hide-no-data-->
-      <!--        hide-details-->
-      <!--        label="Substrate"-->
-      <!--        solo-inverted-->
-      <!--      ></v-autocomplete>-->
-      <v-toolbar-title>Additive</v-toolbar-title>
+      <v-toolbar-title>Compound</v-toolbar-title>
       <v-autocomplete
         v-model="additiveSelect"
         :loading="loadingAdditive"
@@ -32,11 +18,18 @@
         solo-inverted
       ></v-autocomplete>
     </v-toolbar>
-    <v-alert v-if="loaded"> {{ meta.SAMPLE }}</v-alert>
+    <v-btn
+      outlined
+      center
+      block
+      color="teal"
+      @click="resetGraph"
+      v-if="loaded"> {{ meta.SAMPLE }}
+    </v-btn>
     <line-chart
       v-if="loaded"
       :datasets="displayedDatasets"
-      :options="$options.options"
+      :options="options"
       :labels="labels"
     ></line-chart>
   </div>
@@ -51,36 +44,13 @@ var helpers = Chart.helpers;
 const color = ['#9e0142', '#d53e4f', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#e6f598', '#abdda4', '#66c2a5', '#3288bd', '#5e4fa2']
 const Accent8 = ['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f', '#bf5b17', '#666666']
 
-const options = {
-  responsive: true,
-  legend: {
-    display: true
-  },
-  tooltips: {
-    mode: 'nearest'
-  },
-  scales: {
-    yAxes: [{
-      ticks: {
-        beginAtZero: true
-      }
-    }]
-  }
-}
-
 
 export default {
   name: "spectrums",
   components: {LineChart},
-  options,
   data: () => ({
     loaded: false,
-    loadingSubstrate: false,
     loadingAdditive: false,
-    substrateItems: [],
-    substrateSearch: null,
-    substrateSelect: null,
-    substrates: [],
     additiveItems: [],
     additiveSearch: null,
     additiveSelect: null,
@@ -88,7 +58,55 @@ export default {
     additiveQmids: null,
     meta: null,
     basic: ["Mass/%", "Temp./°C"],
-    datasets: []
+    datasets: [],
+    options: {
+      responsive: true,
+      legend: {
+        display: true
+      },
+      tooltips: {
+        mode: 'nearest'
+      },
+      scales: {
+        yAxes: [{
+          id: "Temp./°C",
+          display: 'auto',
+          position: 'right',
+          scaleLabel: {
+            display: true,
+            labelString: 'Temperature (°C)'
+          },
+          ticks: {
+            beginAtZero: false,
+            min: 0
+          },
+        }, {
+          id: "qmid",
+          display: 'auto',
+          position: 'right',
+          scaleLabel: {
+            display: true,
+            labelString: 'A'
+          },
+          ticks: {
+            beginAtZero: false,
+            min: 0
+          }
+        }, {
+          id: "Mass/%",
+          display: 'auto',
+          position: 'left',
+          scaleLabel: {
+            display: true,
+            labelString: 'Mass (%)'
+          },
+          ticks: {
+            beginAtZero: false,
+          }
+        }]
+      }
+    }
+
   }),
   watch: {
     substrateSearch(val) {
@@ -104,30 +122,41 @@ export default {
     ...mapState(["flavors"]),
     displayedDatasets() {
       if (this.additiveSearch in this.additiveQmids) {
-        let filt = this.datasets.filter(
+        let i = 0
+        return this.datasets.filter(
           function (e) {
+            if (this.indexOf(e.label) >= 0) {
+              let color = Accent8[i % this.length];
+              if (e.label.includes("QMID")) {
+                e["backgroundColor"] = helpers.color(color).alpha(0.3).rgbString()
+                e.yAxisID = 'qmid'
+              } else {
+                e["backgroundColor"] = helpers.color(color).alpha(0.05).rgbString()
+                e.fillAlpha = 0.01
+              }
+
+
+              i++
+
+            }
             return this.indexOf(e.label) >= 0;
           },
-          this.additiveQmids[this.additiveSearch]
-        );
-        filt.forEach(function (item, index) {
-          let color = Accent8[index % filt.length];
-          item["backgroundColor"] = helpers.color(color).alpha(0.3).rgbString()
-        });
-        return filt
+          this.additiveQmids[this.additiveSearch] + ['Mass/%']
+        )
       }
       if (this.datasets) {
-        let filt = this.datasets.filter(
+        return this.datasets.filter(
           function (e) {
+            if (this.indexOf(e.label) >= 0) {
+              e.yAxisID = e.label
+            }
             return this.indexOf(e.label) >= 0;
           },
           this.basic
         )
-
-        return filt
       }
-    }
-    ,
+    },
+
 
   },
 
@@ -149,7 +178,6 @@ export default {
     }
     ,
     loaddata: async function () {
-      await this.$store.dispatch("flavors/getSubstrates")
       await this.$store.dispatch("flavors/getAdditives")
       await this.$store.dispatch("flavors/getQmids")
       await this.$store.dispatch("flavors/getSpectrum", this.$route.params.spectrumId)
@@ -158,29 +186,51 @@ export default {
       this.additiveQmids = this.$store.state.flavors.qmids
       this.meta = this.$store.state.flavors.meta
 
-    }
-    ,
+    },
+
+    makeDatasets: function () {
+      let d = this.$store.state.flavors.spectrum
+      this.labels = d['Time/min'].map(e => e.replace(/^0+(\d)|(\d)0+$/gm, '$1$2')).map(e => e.substring(0, 5))
+      let y = this.labels
+      let x = []
+      Object.entries(d).forEach(function (val, key) {
+        let rr = {
+          labels: y,
+          datasets: {
+            label: val[0],
+            data: val[1],
+            backgroundColor: helpers.color(Accent8[key % d.length]).alpha(0.3).rgbString(),
+          }
+        }
+        x.push(rr)
+      })
+      let colorId = 0
+      for (const [key, value] of Object.entries(d)) {
+        if (colorId === Accent8.length) {
+          colorId = 0
+        }
+        let obj = {
+          label: key,
+          data: value.map(Number),
+          backgroundColor: helpers.color(Accent8[colorId]).alpha(0.3).rgbString(),
+          fillAlpha: 0.1,
+          yAxisID: ''
+        }
+        this.datasets.push(obj)
+        colorId += 1
+      }
+      // console.log(this.datasets, x)
+    },
+    resetGraph() {
+      this.additiveSearch = null
+      this.additiveSelect = null
+    },
   },
 
 
   async created() {
     await this.loaddata();
-    let d = this.$store.state.flavors.spectrum
-    let colorId = 0
-    this.labels = d['Time/min']
-    for (const [key, value] of Object.entries(d)) {
-      if (colorId === Accent8.length) {
-        colorId = 0
-      }
-      let obj = {
-        label: key,
-        data: value.map(Number),
-        backgroundColor: helpers.color(Accent8[colorId]).alpha(0.3).rgbString(),
-        fillAlpha: 0.1
-      }
-      this.datasets.push(obj)
-      colorId += 1
-    }
+    this.makeDatasets();
     this.loaded = true
   },
 
