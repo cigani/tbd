@@ -3,7 +3,7 @@
     class="mx-auto">
     <v-list>
       <v-list-group
-        prepend-icon="fa-user"
+        prepend-icon="fa-database"
         no-action
         v-for="(flavor, index) in flavors.flavors"
         :key="index">

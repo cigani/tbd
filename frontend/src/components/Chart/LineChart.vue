@@ -35,6 +35,7 @@ export default {
       // Replace the datasets and call the update() method on Chart.js
       // instance to re-render the chart.
       this.chart.data.datasets = newDatasets;
+      this.chart.data.labels = this.labels
       this.chart.update();
     },
     options(newOptions){
@@ -43,7 +44,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.datasets)
     this.chart = new Chart(this.$refs.myChart, {
         type: 'line',
         data: {

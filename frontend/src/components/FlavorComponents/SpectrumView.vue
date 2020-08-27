@@ -6,7 +6,6 @@
       <v-toolbar-title>Compound</v-toolbar-title>
       <v-autocomplete
         v-model="additiveSelect"
-        :loading="loadingAdditive"
         :items="additiveItems"
         :search-input.sync="additiveSearch"
         cache-items
@@ -14,9 +13,10 @@
         flat
         hide-no-data
         hide-details
-        label="Additive"
+        label="Search for Ions"
         solo-inverted
       ></v-autocomplete>
+      <v-btn icon @click="$router.push({name:'flavors'})"><v-icon >fa-heart</v-icon></v-btn>
     </v-toolbar>
     <v-btn
       outlined
@@ -50,13 +50,13 @@ export default {
   components: {LineChart},
   data: () => ({
     loaded: false,
-    loadingAdditive: false,
     additiveItems: [],
     additiveSearch: null,
     additiveSelect: null,
-    additives: [],
     additiveQmids: null,
     meta: null,
+    temp: null,
+    time: null,
     basic: ["Mass/%", "Temp./°C"],
     datasets: [],
     options: {
@@ -68,6 +68,22 @@ export default {
         mode: 'nearest'
       },
       scales: {
+        xAxes: [{
+          id: 'temp',
+          display: 'auto',
+          scaleLabel: {
+            display: true,
+            labelString: "Temperatrue (°C)"
+          }
+        },
+          {
+            id: 'time',
+            display: 'auto',
+            scaleLabel: {
+              display: true,
+              labelString: "Time (min)"
+            }
+          }],
         yAxes: [{
           id: "Temp./°C",
           display: 'auto',
@@ -109,9 +125,6 @@ export default {
 
   }),
   watch: {
-    substrateSearch(val) {
-      val && val !== this.substrateSelect && this.substrateQuery(val)
-    },
     additiveSearch(val) {
       val && val !== this.additiveSelect && this.additiveQuery(val)
     },
@@ -123,6 +136,7 @@ export default {
     displayedDatasets() {
       if (this.additiveSearch in this.additiveQmids) {
         let i = 0
+        this.labels = this.temp
         return this.datasets.filter(
           function (e) {
             if (this.indexOf(e.label) >= 0) {
@@ -134,10 +148,8 @@ export default {
                 e["backgroundColor"] = helpers.color(color).alpha(0.05).rgbString()
                 e.fillAlpha = 0.01
               }
-
-
+              e.xAxisID = 'temp'
               i++
-
             }
             return this.indexOf(e.label) >= 0;
           },
@@ -145,10 +157,16 @@ export default {
         )
       }
       if (this.datasets) {
+        let i = 0
         return this.datasets.filter(
           function (e) {
             if (this.indexOf(e.label) >= 0) {
+              let color = Accent8[i % this.length];
+              e["backgroundColor"] = helpers.color(color).alpha(0.3).rgbString()
               e.yAxisID = e.label
+              e.xAxisID = 'time'
+              i++
+
             }
             return this.indexOf(e.label) >= 0;
           },
@@ -163,26 +181,16 @@ export default {
   props: {},
   methods: {
     ...mapActions(["flavors/getSpectrum"]),
-    ...mapActions(["flavors/getSubstrates"]),
-    ...mapActions(["flavors/getAdditives"]),
     ...mapActions(["flavors/getQmids"]),
     additiveQuery(v) {
-      this.loadingAdditive = true
-      // Simulated ajax query
-      setTimeout(() => {
-        this.additiveItems = this.additives.filter(e => {
-          return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
-        })
-        this.loadingAdditive = false
-      }, 500)
+      this.additiveItems = Object.keys(this.additiveQmids).filter(e => {
+        return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
+      })
     }
     ,
     loaddata: async function () {
-      await this.$store.dispatch("flavors/getAdditives")
       await this.$store.dispatch("flavors/getQmids")
       await this.$store.dispatch("flavors/getSpectrum", this.$route.params.spectrumId)
-      this.substrates = this.$store.state.flavors.substrates
-      this.additives = this.$store.state.flavors.additives
       this.additiveQmids = this.$store.state.flavors.qmids
       this.meta = this.$store.state.flavors.meta
 
@@ -190,20 +198,10 @@ export default {
 
     makeDatasets: function () {
       let d = this.$store.state.flavors.spectrum
-      this.labels = d['Time/min'].map(e => e.replace(/^0+(\d)|(\d)0+$/gm, '$1$2')).map(e => e.substring(0, 5))
-      let y = this.labels
-      let x = []
-      Object.entries(d).forEach(function (val, key) {
-        let rr = {
-          labels: y,
-          datasets: {
-            label: val[0],
-            data: val[1],
-            backgroundColor: helpers.color(Accent8[key % d.length]).alpha(0.3).rgbString(),
-          }
-        }
-        x.push(rr)
-      })
+
+      this.time = d['Time/min'].map(e => e.replace(/^0+(\d)|(\d)0+$/gm, '$1$2')).map(e => e.substring(0, 5))
+      this.temp = d['Temp./°C'].map(e => e.replace(/^0+(\d)|(\d)0+$/gm, '$1$2')).map(e => e.substring(0, 5))
+      this.labels = this.time
       let colorId = 0
       for (const [key, value] of Object.entries(d)) {
         if (colorId === Accent8.length) {
