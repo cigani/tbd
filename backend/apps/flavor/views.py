@@ -26,35 +26,30 @@ class FlavorViewSet(viewsets.ModelViewSet):
         instance.delete()
 
     @action(detail=True, methods=["post"])
-    def set_spectrum(self, request, pk):
+    def spectrum(self, request, pk):
         flavor = Flavor.objects.get(pk=pk)
-        if request.data.get("spectrum"):
-            data = {}
-            netz = self.spectrum_worker(request.data.get("spectrum").read())
-            xy = netz.xy()
-            meta = netz.meta()
-            pure = request.data.get("pure", False)
-            top_qmids = netz.pure()
-            data["pure"] = top_qmids
-            spectrum = Spectrum.objects.create(data=xy, meta=meta, pure=pure)
-            data["spectrum"] = spectrum.id
-            serializer = FlavorSerializer(flavor, data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(FlavorSerializer(flavor).data)
+        print(request.data, flavor, pk)
+        if request.data.get("file"):
+            file = request.data.get("file")
+            netz = self.spectrum_worker(file.read())
+            pure = self.request.data.get('pure', False)
+            data = netz.calculte()
+            data['flavor'] = flavor
+            data['pure'] = pure
+            data['file'] = file
+            spectrum = Spectrum.objects.create(**data)
+            # serializer = FlavorSerializer(flavor, data=data)
+            # serializer.is_valid(raise_exception=True)
+            # serializer.save()
+            return Response(SpectrumSerializer(spectrum).data)
         return Response(status=status.HTTP_404_NOT_FOUND)
-
-    @action(detail=True, methods=["GET"])
-    def get_spectrum(self, request, pk):
-        spectrum = Flavor.objects.get(pk=pk).spectrum
-        return Response(SpectrumSerializer(spectrum).data)
 
     @action(detail=False)
     def substrates(self, request):
         substrates = (
             Flavor.objects.values_list("substrate", named=True)
-            .distinct("substrate")
-            .exclude(substrate__isnull=True)
+                .distinct("substrate")
+                .exclude(substrate__isnull=True)
         )
         serializer = SubstrateSerializer(substrates, many=True)
         return Response(serializer.data)
@@ -63,8 +58,8 @@ class FlavorViewSet(viewsets.ModelViewSet):
     def additives(self, request):
         additives = (
             Flavor.objects.values_list("additive", named=True)
-            .distinct("additive")
-            .exclude(additive__isnull=True)
+                .distinct("additive")
+                .exclude(additive__isnull=True)
         )
         serializer = AdditiveSerializer(additives, many=True)
         return Response(serializer.data)
@@ -72,9 +67,9 @@ class FlavorViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def qmids(self, request):
         qmids = (
-            Flavor.objects.values_list("additive", "pure", named=True)
-            .filter(pure__isnull=False)
-            .exclude(pure__exact={})
+            Spectrum.objects.values_list("flavor__additive", "ions", named=True)
+                .filter(ions__isnull=False)
+                .exclude(ions__exact={})
         )
         serializer = QmidSerializer(qmids, many=True)
         return Response(serializer.data)

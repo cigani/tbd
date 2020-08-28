@@ -24,7 +24,7 @@
       block
       color="teal"
       @click="resetGraph"
-      v-if="loaded"> {{ meta.SAMPLE }}
+      v-if="loaded"> {{ flavors.meta.SAMPLE }}
     </v-btn>
     <line-chart
       v-if="loaded"
@@ -153,7 +153,7 @@ export default {
             }
             return this.indexOf(e.label) >= 0;
           },
-          this.additiveQmids[this.additiveSearch] + ['Mass/%']
+          this.additiveQmids[this.additiveSearch] + ['Mass/%'] + ['QMID(m:164)/A']
         )
       }
       if (this.datasets) {
@@ -174,8 +174,6 @@ export default {
         )
       }
     },
-
-
   },
 
   props: {},
@@ -191,8 +189,10 @@ export default {
     loaddata: async function () {
       await this.$store.dispatch("flavors/getQmids")
       await this.$store.dispatch("flavors/getSpectrum", this.$route.params.spectrumId)
+      console.log(this.flavors)
       this.additiveQmids = this.$store.state.flavors.qmids
-      this.meta = this.$store.state.flavors.meta
+
+
 
     },
 
@@ -217,7 +217,6 @@ export default {
         this.datasets.push(obj)
         colorId += 1
       }
-      // console.log(this.datasets, x)
     },
     resetGraph() {
       this.additiveSearch = null

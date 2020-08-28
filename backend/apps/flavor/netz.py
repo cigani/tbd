@@ -1,10 +1,18 @@
 import csv
 import re
 import pandas as pd
+import chardet
 
 
 class Parse:
     REPLACE_STRINGS = ["##", "s:1|"]
+    NITROGEN = [14, 28, 29, 27, 15]
+    CARBONDIOXIDE = [44, 32, 28, 16, 12]
+    AIR = [32, 16]
+    WATER = [18]
+    ARGON = [40]
+    CARBOXYLICACID = [55]
+
     csvfile = []
     _xy = None
     _meta = None
@@ -13,15 +21,17 @@ class Parse:
         self.file = file
         self.delimiter = delimter
 
+    @staticmethod
+    def qmid(ions: list):
+        return [f"QMID(m:{ion})/A" for ion in ions]
+
     def base(self):
-        if isinstance(self.file, str):
-            _file = open(self.file)
-        else:
-            _file = self.file
         if self.delimiter is None:
             self.delimiter = ";"
-        import chardet
-
+        if isinstance(self.file, str):
+            self.file = open(self.file, 'rb').read()
+        else:
+            self.file = self.file
         decode = chardet.detect(self.file).get("encoding")
         self.file = self.file.decode(decode).splitlines()
         self.csvfile = [
@@ -64,19 +74,24 @@ class Parse:
         ][0]
         for field in self.REPLACE_STRINGS:
             columns = list(map(lambda x: x.replace(f"{field}", ""), columns))
-        data = list(zip(*self.csvfile[index + 1 :]))
+        data = list(zip(*self.csvfile[index + 1:]))
         data_dict = dict(zip(columns, data))
         self._xy = data_dict
         return self._xy
 
     def pure(self):
+        trash_ions = list(
+            ion for ion_list in map(lambda x: self.qmid(x), [self.NITROGEN, self.AIR, self.WATER, self.CARBOXYLICACID]) for ion in ion_list)
         keys = [x for x in list(self.xy().keys()) if re.search("QMID", x)]
         data = {key: self.xy()[key] for key in keys}
         tops = pd.DataFrame(data)
-        top_values = tops.describe()
-        top_qmids = top_values.sort_values(by="top", axis=1).iloc[:, :5].columns.values
+        top_values = tops.apply(lambda x: pd.to_numeric(x)).describe().drop(columns=trash_ions)
+        top_qmids = top_values.sort_values(by="max", axis=1, ascending=False).iloc[:, :5].columns.values
         name = self.meta().get("SAMPLE")
         if name:
             return list(top_qmids)
         else:
             return None
+
+    def calculte(self):
+        return {"data": self.xy(), "meta": self.meta(), "ions": self.pure()}

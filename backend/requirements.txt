@@ -46,6 +46,7 @@ Werkzeug==1.0.1
 django-picklefield==3.0.1
 ipdb==0.13.3
 pandas
+drf-dynamic-fields
 
 djangorestframework==3.11.0
 

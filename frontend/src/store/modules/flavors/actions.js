@@ -76,5 +76,24 @@ export default {
         console.log(e)
       })
   },
+  getSpectrumFields(context,fields) {
+    return axios.get('/api/spectrums/', {params: {fields: fields}})
+      .then(response => {
+        return response.data
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  },
+  getSpectrumDetailFields(context,pk, fields) {
+    return axios.get('/api/spectrums/'+ pk, {params: {fields: fields}})
+      .then(response => {
+        return response.data
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  },
+
 
 }
