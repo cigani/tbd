@@ -67,9 +67,11 @@ class FlavorViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def qmids(self, request):
         qmids = (
-            Spectrum.objects.values_list("flavor__additive", "ions", named=True)
+            Spectrum.objects.values_list("flavor__additive", "flavor__substrate", "ions", named=True)
                 .filter(ions__isnull=False)
+                .filter(pure=True)
                 .exclude(ions__exact={})
+
         )
         serializer = QmidSerializer(qmids, many=True)
         return Response(serializer.data)

@@ -11,6 +11,8 @@ class Flavor(models.Model):
     notes = models.CharField(verbose_name="Notes", null=True, blank=True, max_length=10000)
 
 
+
+
 class Spectrum(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     file = models.FileField(blank=True, default='')
