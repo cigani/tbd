@@ -23,7 +23,7 @@
         <v-list-item
           :key=i
           v-for="(subItem, i) in flavor"
-          v-if="i!=='id' && subItem && i!=='label' && i!=='spectrum'"
+          v-if="i!=='id' && subItem && i!=='label' && i!=='spectrum' && i!=='meta'"
         >
           <v-list-item-content>
             {{ i }} : {{ subItem }}
@@ -32,13 +32,14 @@
         <v-divider inset></v-divider>
         <v-subheader inset>Spectrums</v-subheader>
         <v-list-item
-          :key=i
-          v-for="(spectrum, i) in flavor.spectrum"
-          v-if="spectrum && metaLoaded"
+          :key=spectrum
+          v-for="(spectrum, i) in (flavor.spectrum)"
+          v-if="spectrum"
         >
-          <v-btn rounded color="grey" @click="$router.push({name: 'spectrum', params: {spectrumId: spectrum}})">
-            <v-icon left>fa-chart-area</v-icon>
-            {{ spectrumdata[spectrum].meta.RANGE}}
+          <v-btn rounded color="grey"
+                 @click="$router.push({name: 'spectrum', params: {spectrumId: spectrum}})">
+            <v-icon left>fa-chart-area</v-icon> {{flavor.meta[i][0]["SAMPLE"]}}
+
           </v-btn>
 
         </v-list-item>
@@ -55,10 +56,8 @@ export default {
   name: 'FlavorView',
   data() {
     return {
-      loading: false,
+      loading: true,
       error: null,
-      spectrumdata: {id: 1, meta: null},
-      metaLoaded: false
     }
   },
   computed: {
@@ -68,31 +67,11 @@ export default {
     logdata(item) {
       console.log(item)
     },
-    dummyFetch: async function (pk) {
-      let fields = 'id,meta'
-      return await this.$store.dispatch("flavors/getSpectrumDetailFields", {pk, fields})
-
-    },
-    fetchSpecturm: async function (pk) {
-      var data = await this.dummyFetch(pk)
-      this.spectrumdata[pk.toString()] = data
-    }
-
-
   },
+
   async mounted() {
     await this.$store.dispatch("flavors/getFlavorsList")
-    let m = Object.values(this.flavors.flavors).filter(e => {
-      return e.spectrum.length > 0
-    })
-
-    Object.values(m).forEach(e => {
-      e.spectrum.forEach(pk => {
-        this.fetchSpecturm(pk)
-      })
-    })
-    this.metaLoaded=true
-    console.log(this.spectrumdata)
+    console.log(this.flavors)
   }
   ,
 }
