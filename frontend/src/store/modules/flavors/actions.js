@@ -85,14 +85,16 @@ export default {
         console.log(e)
       })
   },
-  getSpectrumDetailFields(context,pk, fields) {
+  getSpectrumDetailFields(context,{pk, fields}) {
+    console.log(pk, fields)
+    if (pk){
     return axios.get('/api/spectrums/'+ pk, {params: {fields: fields}})
       .then(response => {
         return response.data
       })
       .catch(e => {
         console.log(e)
-      })
+      })}
   },
 
 

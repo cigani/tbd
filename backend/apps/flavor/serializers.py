@@ -32,7 +32,7 @@ class AdditiveSerializer(serializers.ModelSerializer):
 class SpectrumSerializer(DynamicFieldsMixin,serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Spectrum
-        fields = ('id', 'meta', 'ions', 'file', 'pure', 'data')
+        fields = ('id', 'meta', 'ions', 'file', 'pure', 'data', 'formulation')
 
 class FlavorSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField()

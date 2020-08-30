@@ -21,3 +21,4 @@ class Spectrum(models.Model):
     )
     ions = JSONField(blank=True, null=True)
     pure = models.BooleanField(default=False)
+    formulation = models.CharField(blank=True, default='', max_length=1000)
