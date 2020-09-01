@@ -8,6 +8,7 @@ import store from "@/store/store";
 import UserView from "@/components/UserComponenets/UserView";
 import FlavorView from "@/components/FlavorComponents/FlavorView";
 import SpectrumView from "@/components/FlavorComponents/SpectrumView";
+import FlavorInputForm from "@/components/FlavorComponents/FlavorInputForm";
 
 const routes = [
   {
@@ -39,6 +40,11 @@ const routes = [
     path: "/spectrums/:spectrumId",
     name: "spectrum",
     component: SpectrumView
+  },
+  {
+    path:"/new",
+    name: "newflavor",
+    component: FlavorInputForm
   }
 
 ]

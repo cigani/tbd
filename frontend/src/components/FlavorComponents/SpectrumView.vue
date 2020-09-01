@@ -16,7 +16,7 @@
         label="Search for Ions"
         solo-inverted
       ></v-autocomplete>
-      <v-btn icon @click="$router.push({name:'flavors'})"><v-icon >fa-heart</v-icon></v-btn>
+      <v-btn icon @click="$router.push({name:'flavors'})"><v-icon >fa-database</v-icon></v-btn>
     </v-toolbar>
     <v-btn
       outlined
