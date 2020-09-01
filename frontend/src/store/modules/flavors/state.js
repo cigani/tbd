@@ -6,7 +6,8 @@ const STATE = {
   meta: null,
   additives: [],
   substrates: [],
-  qmids: null
+  qmids: null,
+  createdFlavor: null
 
 };
 

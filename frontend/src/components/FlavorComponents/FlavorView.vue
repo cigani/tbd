@@ -6,7 +6,7 @@
         prepend-icon="fa-database"
         no-action
         v-for="(flavor, index) in flavors.flavors"
-        :key=index>
+        :key=flavor.id>
         <template v-slot:activator>
           <v-list-item-content>
             <v-list-item-title v-if="flavor.substrate && flavor.additive">
@@ -23,22 +23,35 @@
         <v-list-item
           :key=i
           v-for="(subItem, i) in flavor"
-          v-if="i!=='id' && subItem && i!=='label' && i!=='spectrum' && i!=='meta'"
+          v-if="i!=='id' && subItem && i!=='label' && i!=='spectrum'"
         >
           <v-list-item-content>
             {{ i }} : {{ subItem }}
           </v-list-item-content>
         </v-list-item>
         <v-divider inset></v-divider>
+        <v-subheader inset> Modify Flavors</v-subheader>
+        <v-list-item>
+          <v-btn @click="deleteFlavor(flavor)"
+                 color="warning"
+                 right
+          >Delete Flavor
+          </v-btn>
+          <v-btn
+          @click="$router.push({name: 'flavor', params:{flavorId: flavor.id}})"
+          color="primary"
+          right>Modify Flavor</v-btn>
+        </v-list-item>
+        <v-divider inset></v-divider>
         <v-subheader inset>Spectrums</v-subheader>
         <v-list-item
-          :key=spectrum
-          v-for="(spectrum, i) in (flavor.spectrum)"
-          v-if="spectrum"
+          :key=index
+          v-for="(spectrum, index) in (flavor.spectrum)"
         >
           <v-btn rounded color="grey"
-                 @click="$router.push({name: 'spectrum', params: {spectrumId: spectrum}})">
-            <v-icon left>fa-chart-area</v-icon> {{flavor.meta[i][0]["SAMPLE"]}}
+                 @click="$router.push({name: 'spectrum', params: {spectrumId: spectrum[0]}})">
+            <v-icon left>fa-chart-area</v-icon>
+            {{ spectrum[1].SAMPLE }} {{ index }}
 
           </v-btn>
 
@@ -67,11 +80,16 @@ export default {
     logdata(item) {
       console.log(item)
     },
+    deleteFlavor(flavor) {
+      if (confirm("Are you certain you wish to delete this Flavor? All Spectrums attached will be deleted as well")) {
+        this.$store.dispatch("flavors/deleteFlavor", flavor.id)
+        this.flavors.flavors = this.flavors.flavors.filter(x => x.id !== flavor.id)
+      }
+    }
   },
 
   async mounted() {
     await this.$store.dispatch("flavors/getFlavorsList")
-    console.log(this.flavors)
   }
   ,
 }

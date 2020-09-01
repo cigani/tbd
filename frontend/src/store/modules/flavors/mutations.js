@@ -3,7 +3,7 @@ import {
   SET_SPECTRUM,
   SET_FLAVORS,
   SET_SPECTRUMS,
-  SET_ADDITIVES, SET_SUBSTRATES, SET_QMIDS
+  SET_ADDITIVES, SET_SUBSTRATES, SET_QMIDS, CREATED_FLAVOR
 } from "@/store/modules/flavors/mutation-types";
 
 export default {
@@ -18,7 +18,7 @@ export default {
   [SET_SPECTRUMS](state, data) {
     state.spectrums = data
   },
-  [SET_FLAVOR](state, {data}) {
+  [SET_FLAVOR](state, data) {
     state.flavor = data;
   },
   [SET_SPECTRUM](state, data) {
@@ -33,5 +33,9 @@ export default {
   },
   [SET_QMIDS](state, data){
     state.qmids = data
+  },
+  [CREATED_FLAVOR](state, data){
+    state.createdFlavor=data
   }
+
 };

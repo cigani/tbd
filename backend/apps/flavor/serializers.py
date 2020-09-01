@@ -44,13 +44,14 @@ class SpectrumSerializer(DynamicFieldsMixin, serializers.HyperlinkedModelSeriali
 
 class FlavorSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField()
-    meta = serializers.SerializerMethodField()
+    spectrum = serializers.SerializerMethodField()
+
     class Meta:
         model = Flavor
-        fields = ['id', 'substrate', 'additive', 'notes', 'label', 'spectrum', 'meta']
+        fields = ['id', 'substrate', 'additive', 'notes', 'label', 'spectrum']
 
     def get_label(self, obj):
         return f"{obj.substrate} - {obj.additive}"
 
-    def get_meta(self, obj):
-        return obj.spectrum.values_list('meta', named=True)
+    def get_spectrum(self, obj):
+        return obj.spectrum.values_list('id', 'meta', named=True)

@@ -4,7 +4,7 @@ import {
   SET_SPECTRUM,
   SET_SPECTRUMS,
   SET_ADDITIVES,
-  SET_SUBSTRATES, SET_QMIDS
+  SET_SUBSTRATES, SET_QMIDS, CREATED_FLAVOR, SET_FLAVOR
 } from "@/store/modules/flavors/mutation-types";
 
 export default {
@@ -12,6 +12,16 @@ export default {
     return axios.get('/api/flavors')
       .then(response => {
         context.commit(SET_FLAVORS, response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  },
+
+  getFlavor(context, flavorId){
+    return axios.get('/api/flavors/' + flavorId)
+      .then(response => {
+        context.commit(SET_FLAVOR, response.data)
       })
       .catch(e => {
         console.log(e)
@@ -76,7 +86,7 @@ export default {
         console.log(e)
       })
   },
-  getSpectrumFields(context,fields) {
+  getSpectrumFields(context, fields) {
     return axios.get('/api/spectrums/', {params: {fields: fields}})
       .then(response => {
         return response.data
@@ -85,16 +95,36 @@ export default {
         console.log(e)
       })
   },
-  getSpectrumDetailFields(context,{pk, fields}) {
+  getSpectrumDetailFields(context, {pk, fields}) {
     console.log(pk, fields)
-    if (pk){
-    return axios.get('/api/spectrums/'+ pk, {params: {fields: fields}})
+    if (pk) {
+      return axios.get('/api/spectrums/' + pk, {params: {fields: fields}})
+        .then(response => {
+          return response.data
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    }
+  },
+  createFlavor(context, payload) {
+    return axios.post('/api/flavors/', payload)
       .then(response => {
-        return response.data
+        context.commit(CREATED_FLAVOR, true)
       })
       .catch(e => {
         console.log(e)
-      })}
+        context.commit(CREATED_FLAVOR, false)
+      })
+  },
+  deleteFlavor(context, flavorId) {
+    return axios.delete('api/flavors/' + flavorId)
+      .then(response => {
+        return "True"
+      })
+      .catch(e => {
+        console.log(e)
+      })
   },
 
 
