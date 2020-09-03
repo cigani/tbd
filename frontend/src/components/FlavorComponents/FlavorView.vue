@@ -30,17 +30,33 @@
           </v-list-item-content>
         </v-list-item>
         <v-divider inset></v-divider>
-        <v-subheader inset> Modify Flavors</v-subheader>
+        <v-subheader inset> Modify </v-subheader>
         <v-list-item>
-          <v-btn @click="deleteFlavor(flavor)"
-                 color="warning"
-                 right
-          >Delete Flavor
-          </v-btn>
-          <v-btn
-          @click="$router.push({name: 'flavor', params:{flavorId: flavor.id}})"
-          color="primary"
-          right>Modify Flavor</v-btn>
+          <v-col
+            cols="12">
+            <v-row
+              no-gutters
+              justify="space-around"
+              align="center">
+              <v-btn @click="$router.push({name: 'FlavorAddSpectrum', params:{flavorId: flavor.id}})"
+                     color="blue lighten-4"
+              >Add Spectrum
+              </v-btn>
+              <v-btn
+                @click="$router.push({name: 'flavor', params:{flavorId: flavor.id}})"
+                color="blue lighten-1"
+                right>Modify Flavor
+              </v-btn>
+              <v-btn @click="deleteFlavor(flavor)"
+                     color="red darken-4"
+                     :disabled="!disabled"
+              >Delete Flavor
+              </v-btn>
+              <v-checkbox v-model="disabled" label="Allow Delete"></v-checkbox>
+
+            </v-row>
+          </v-col>
+
         </v-list-item>
         <v-divider inset></v-divider>
         <v-subheader inset>Spectrums</v-subheader>
@@ -71,6 +87,7 @@ export default {
     return {
       loading: true,
       error: null,
+      disabled: false
     }
   },
   computed: {
@@ -85,7 +102,7 @@ export default {
         this.$store.dispatch("flavors/deleteFlavor", flavor.id)
         this.flavors.flavors = this.flavors.flavors.filter(x => x.id !== flavor.id)
       }
-    }
+    },
   },
 
   async mounted() {

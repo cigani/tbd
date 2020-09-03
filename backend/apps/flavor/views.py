@@ -28,19 +28,16 @@ class FlavorViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def spectrum(self, request, pk):
         flavor = Flavor.objects.get(pk=pk)
-        print(request.data, flavor, pk)
-        if request.data.get("file"):
-            file = request.data.get("file")
-            netz = self.spectrum_worker(file.read())
-            pure = self.request.data.get('pure', False)
-            data = netz.calculte()
-            data['flavor'] = flavor
-            data['pure'] = pure
-            data['file'] = file
-            spectrum = Spectrum.objects.create(**data)
-            # serializer = FlavorSerializer(flavor, data=data)
-            # serializer.is_valid(raise_exception=True)
-            # serializer.save()
+        if (flavor and request.FILES):
+            for filename in request.FILES:
+                file = request.FILES[filename]
+                netz = self.spectrum_worker(file.read())
+                pure = self.request.data.get('pure', False)
+                data = netz.calculte()
+                data['flavor'] = flavor
+                data['pure'] = pure
+                data['file'] = file
+                spectrum = Spectrum.objects.create(**data)
             return Response(SpectrumSerializer(spectrum).data)
         return Response(status=status.HTTP_404_NOT_FOUND)
 

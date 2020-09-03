@@ -189,7 +189,6 @@ export default {
     loaddata: async function () {
       await this.$store.dispatch("flavors/getQmids")
       await this.$store.dispatch("flavors/getSpectrum", this.$route.params.spectrumId)
-      console.log(this.flavors)
       this.additiveQmids = this.$store.state.flavors.qmids
 
 

@@ -10,6 +10,7 @@ import FlavorView from "@/components/FlavorComponents/FlavorView";
 import SpectrumView from "@/components/FlavorComponents/SpectrumView";
 import FlavorInputForm from "@/components/FlavorComponents/FlavorInputForm";
 import FlavorModify from "@/components/FlavorComponents/FlavorModify";
+import FlavorAddSpectrum from "@/components/FlavorComponents/FlavorAddSpectrum";
 
 const routes = [
   {
@@ -51,7 +52,12 @@ const routes = [
     path:"/flavors/:flavorId",
     name:"flavor",
     component: FlavorModify
-  }
+  },
+  {
+    path:"/favors/addSpectrum/:flavorId",
+    name:"FlavorAddSpectrum",
+    component: FlavorAddSpectrum
+  },
 
 ]
 

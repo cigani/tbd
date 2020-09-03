@@ -18,7 +18,7 @@ export default {
       })
   },
 
-  getFlavor(context, flavorId){
+  getFlavor(context, flavorId) {
     return axios.get('/api/flavors/' + flavorId)
       .then(response => {
         context.commit(SET_FLAVOR, response.data)
@@ -126,6 +126,20 @@ export default {
         console.log(e)
       })
   },
+  createSpectrum(context, payload) {
+    let formData = new FormData();
+    for (let file of payload.files) {
+      formData.append(file.name, file, file.name)
+    }
+    return axios.post('/api/flavors/' + payload.pk + '/spectrum', formData)
+      .then(response => {
+        return response.status
+        })
+      .catch(e => {
+        console.log(e)
+      })
+
+  }
 
 
 }
