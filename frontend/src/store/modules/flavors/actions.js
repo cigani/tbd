@@ -111,10 +111,12 @@ export default {
     return axios.post('/api/flavors/', payload)
       .then(response => {
         context.commit(CREATED_FLAVOR, true)
+        return response
       })
       .catch(e => {
         console.log(e)
         context.commit(CREATED_FLAVOR, false)
+        return e.response
       })
   },
   deleteFlavor(context, flavorId) {
