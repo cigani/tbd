@@ -8,12 +8,12 @@ class QmidSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flavor
-        fields = ['qmids']
+        fields = ["qmids"]
 
     def get_qmids(self, obj):
-        if (obj.flavor__additive and obj.flavor__substrate):
+        if obj.flavor__additive and obj.flavor__substrate:
             return {f"{obj.flavor__substrate} - {obj.flavor__additive}": obj.ions}
-        elif (obj.flavor__additive):
+        elif obj.flavor__additive:
             return {obj.flavor__additive: obj.ions}
         else:
             return {obj.flavor__substrate: obj.ions}
@@ -39,7 +39,7 @@ class AdditiveSerializer(serializers.ModelSerializer):
 class SpectrumSerializer(DynamicFieldsMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Spectrum
-        fields = ('id', 'meta', 'ions', 'file', 'pure', 'data', 'formulation')
+        fields = ("id", "meta", "ions", "file", "pure", "data", "formulation")
 
 
 class FlavorSerializer(serializers.ModelSerializer):
@@ -48,10 +48,10 @@ class FlavorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flavor
-        fields = ['id', 'substrate', 'additive', 'notes', 'label', 'spectrum']
+        fields = ["id", "substrate", "additive", "notes", "label", "spectrum"]
 
     def get_label(self, obj):
         return f"{obj.substrate} - {obj.additive}"
 
     def get_spectrum(self, obj):
-        return obj.spectrum.values_list('id', 'meta', named=True)
+        return obj.spectrum.values_list("id", "meta", named=True)

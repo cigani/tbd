@@ -133,10 +133,11 @@ export default {
     }
     return axios.post('/api/flavors/' + payload.pk + '/spectrum', formData)
       .then(response => {
-        return response.status
+        return response
         })
       .catch(e => {
-        console.log(e)
+        console.log(e.response)
+        return e.response
       })
 
   }

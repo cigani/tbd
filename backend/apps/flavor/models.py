@@ -8,14 +8,14 @@ class Flavor(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     additive = models.CharField(verbose_name="Additive", max_length=75, null=True)
     substrate = models.CharField(verbose_name="Substrate", max_length=75, null=True)
-    notes = models.CharField(verbose_name="Notes", null=True, blank=True, max_length=10000)
-
-
+    notes = models.CharField(
+        verbose_name="Notes", null=True, blank=True, max_length=10000
+    )
 
 
 class Spectrum(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    file = models.FileField(blank=True, default='')
+    file = models.FileField(blank=True, default="")
     data = JSONField(null=True)
     meta = JSONField(null=True)
     flavor = models.ForeignKey(
@@ -23,5 +23,5 @@ class Spectrum(models.Model):
     )
     ions = JSONField(blank=True, null=True)
     pure = models.BooleanField(default=False)
-    formulation = models.CharField(blank=True, default='', max_length=1000)
+    formulation = models.CharField(blank=True, default="", max_length=1000)
     image = models.FileField(null=True)

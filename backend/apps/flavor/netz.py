@@ -2,7 +2,10 @@ import csv
 import re
 import pandas as pd
 import chardet
+import logging
 
+FORMAT = '%(levelname)s %(asctime)-15s %(message)s'
+logging.basicConfig(filename="netz.log", format=FORMAT)
 
 class Parse:
     REPLACE_STRINGS = ["##", "s:1|"]
@@ -17,9 +20,12 @@ class Parse:
     _xy = None
     _meta = None
 
+    log = logging.getLogger('netz')
+
     def __init__(self, file, delimter=None):
         self.file = file
         self.delimiter = delimter
+        self.error = False
 
     @staticmethod
     def qmid(ions: list):
@@ -29,7 +35,7 @@ class Parse:
         if self.delimiter is None:
             self.delimiter = ";"
         if isinstance(self.file, str):
-            self.file = open(self.file, 'rb').read()
+            self.file = open(self.file, "rb").read()
         else:
             self.file = self.file
         decode = chardet.detect(self.file).get("encoding")
@@ -74,24 +80,41 @@ class Parse:
         ][0]
         for field in self.REPLACE_STRINGS:
             columns = list(map(lambda x: x.replace(f"{field}", ""), columns))
-        data = list(zip(*self.csvfile[index + 1:]))
+        data = list(zip(*self.csvfile[index + 1 :]))
         data_dict = dict(zip(columns, data))
         self._xy = data_dict
         return self._xy
 
     def pure(self):
         trash_ions = list(
-            ion for ion_list in map(lambda x: self.qmid(x), [self.NITROGEN, self.AIR, self.WATER, self.CARBOXYLICACID]) for ion in ion_list)
+            ion
+            for ion_list in map(
+                lambda x: self.qmid(x),
+                [self.NITROGEN, self.AIR, self.WATER, self.CARBOXYLICACID],
+            )
+            for ion in ion_list
+        )
         keys = [x for x in list(self.xy().keys()) if re.search("QMID", x)]
         data = {key: self.xy()[key] for key in keys}
         tops = pd.DataFrame(data)
-        top_values = tops.apply(lambda x: pd.to_numeric(x)).describe().drop(columns=trash_ions)
-        top_qmids = top_values.sort_values(by="max", axis=1, ascending=False).iloc[:, :5].columns.values
+        top_values = (
+            tops.apply(lambda x: pd.to_numeric(x)).describe().drop(columns=trash_ions)
+        )
+        top_qmids = (
+            top_values.sort_values(by="max", axis=1, ascending=False)
+            .iloc[:, :5]
+            .columns.values
+        )
         name = self.meta().get("SAMPLE")
         if name:
             return list(top_qmids)
         else:
             return None
 
-    def calculte(self):
-        return {"data": self.xy(), "meta": self.meta(), "ions": self.pure()}
+    def calculate(self):
+        try:
+            return {"data": self.xy(), "meta": self.meta(), "ions": self.pure()}, self.error
+        except Exception as e:
+            self.error = True
+            self.log.critical('Netz Error: %s', f"has failed with {e}")
+            return {}, self.error
