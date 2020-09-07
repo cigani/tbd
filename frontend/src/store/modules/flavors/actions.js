@@ -144,6 +144,7 @@ export default {
     for (let file of payload.files) {
       formData.append(file.name, file, file.name)
     }
+    formData.append('pure', payload.pure)
     return axios.post('/api/flavors/' + payload.pk + '/spectrum', formData)
       .then(response => {
         return response

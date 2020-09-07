@@ -8,9 +8,9 @@ import store from "@/store/store";
 import UserView from "@/components/UserComponenets/UserView";
 import FlavorView from "@/components/FlavorComponents/FlavorView";
 import SpectrumView from "@/components/FlavorComponents/SpectrumView";
-import FlavorInputForm from "@/components/FlavorComponents/FlavorInputForm";
 import FlavorModify from "@/components/FlavorComponents/FlavorModify";
 import FlavorAddSpectrum from "@/components/FlavorComponents/FlavorAddSpectrum";
+import FlavorNewFlavor from "@/components/FlavorComponents/FlavorNewFlavor";
 
 const routes = [
   {
@@ -46,7 +46,7 @@ const routes = [
   {
     path:"/new",
     name: "newflavor",
-    component: FlavorInputForm
+    component: FlavorNewFlavor
   },
   {
     path:"/flavors/:flavorId",

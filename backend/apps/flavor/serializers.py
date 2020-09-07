@@ -48,7 +48,7 @@ class FlavorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flavor
-        fields = ["id", "substrate", "additive", "notes", "label", "spectrum"]
+        fields = ["id", "substrate", "additive", "lims", 'pdms', "label", "spectrum"]
 
     def get_label(self, obj):
         return f"{obj.substrate} - {obj.additive}"

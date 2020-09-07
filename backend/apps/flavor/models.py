@@ -8,9 +8,11 @@ class Flavor(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     additive = models.CharField(verbose_name="Additive", max_length=75, null=True)
     substrate = models.CharField(verbose_name="Substrate", max_length=75, null=True)
-    notes = models.CharField(
-        verbose_name="Notes", null=True, blank=True, max_length=10000
+    pdms = models.CharField(
+        verbose_name="PDMS", null=True, blank=True, max_length=50
     )
+    lims = models.CharField(
+        verbose_name="LIMS", null=True, blank=True, max_length=50)
 
 
 class Spectrum(models.Model):

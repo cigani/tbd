@@ -55,7 +55,7 @@ export default {
     },
 
   },
-  created() {
+  submitted() {
     this.$store.dispatch("getUsersList")
   },
 }

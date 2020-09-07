@@ -224,7 +224,7 @@ export default {
   },
 
 
-  async created() {
+  async submitted() {
     await this.loaddata();
     this.makeDatasets();
     this.loaded = true

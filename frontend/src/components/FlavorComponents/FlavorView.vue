@@ -3,7 +3,7 @@
     fluid>
       <v-card
         class="mx-auto">
-        <flavor-toolbar label="Flavor Data" additional="home"></flavor-toolbar>
+        <flavor-toolbar label="Flavor Database" additional="home"></flavor-toolbar>
         <v-list>
           <v-list-group
             prepend-icon="fa-database"
@@ -43,17 +43,17 @@
                   align="center">
                   <v-btn @click="$router.push({name: 'FlavorAddSpectrum', params:{flavorId: flavor.id}})"
                          color="blue lighten-4"
-                  >Add Spectrum
+                  >Add Data
                   </v-btn>
                   <v-btn
                     @click="$router.push({name: 'flavor', params:{flavorId: flavor.id}})"
                     color="blue lighten-1"
-                    right>Modify Flavor
+                    right>Modify Entry
                   </v-btn>
                   <v-btn @click="deleteFlavor(flavor)"
                          color="red darken-4"
                          :disabled="!disabled"
-                  >Delete Flavor
+                  >Delete Entry
                   </v-btn>
                   <v-checkbox v-model="disabled" label="Allow Delete"></v-checkbox>
 

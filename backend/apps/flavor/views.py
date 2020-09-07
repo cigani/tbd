@@ -36,6 +36,10 @@ class FlavorViewSet(viewsets.ModelViewSet):
                     file = request.FILES[filename]
                     netz = self.spectrum_worker(file.read())
                     pure = self.request.data.get("pure", False)
+                    if pure == 'true':
+                        pure = True
+                    else:
+                        pure = False
                     data, bad_data = netz.calculate()
                     if bad_data:
                         response[filename] = status.HTTP_500_INTERNAL_SERVER_ERROR
