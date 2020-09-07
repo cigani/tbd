@@ -110,13 +110,24 @@ export default {
   createFlavor(context, payload) {
     return axios.post('/api/flavors/', payload)
       .then(response => {
-        context.commit(CREATED_FLAVOR, true)
+        context.commit(CREATED_FLAVOR, response.data)
         return response
       })
       .catch(e => {
         console.log(e)
         context.commit(CREATED_FLAVOR, false)
         return e.response
+      })
+  },
+  editFlavor(context, payload) {
+
+    return axios.patch('/api/flavors/' + payload.id, payload)
+      .then(response => {
+        return response
+        }
+      )
+      .catch(e => {
+        console.log(e)
       })
   },
   deleteFlavor(context, flavorId) {
@@ -136,7 +147,7 @@ export default {
     return axios.post('/api/flavors/' + payload.pk + '/spectrum', formData)
       .then(response => {
         return response
-        })
+      })
       .catch(e => {
         console.log(e.response)
         return e.response
