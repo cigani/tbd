@@ -48,7 +48,7 @@ ipdb==0.13.3
 pandas
 drf-dynamic-fields
 
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 
 
 
